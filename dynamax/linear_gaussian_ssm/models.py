@@ -15,7 +15,7 @@ from dynamax.linear_gaussian_ssm.inference import lgssm_joint_sample, lgssm_filt
 from dynamax.linear_gaussian_ssm.inference import ParamsLGSSM, ParamsLGSSMInitial, ParamsLGSSMDynamics, ParamsLGSSMEmissions
 from dynamax.linear_gaussian_ssm.inference import PosteriorGSSMFiltered, PosteriorGSSMSmoothed
 from dynamax.parameters import ParameterProperties
-from dynamax.types import PRNGKey, Scalar
+from dynamax.types import PRNGKeyT, Scalar
 from dynamax.utils.bijectors import RealToPSDBijector
 from dynamax.utils.distributions import MatrixNormalInverseWishart as MNIW
 from dynamax.utils.distributions import NormalInverseWishart as NIW
@@ -88,7 +88,7 @@ class LinearGaussianSSM(SSM):
 
     def initialize(
         self,
-        key: PRNGKey =jr.PRNGKey(0),
+        key: PRNGKeyT =jr.PRNGKey(0),
         initial_mean: Optional[Float[Array, " state_dim"]]=None,
         initial_covariance=None,
         dynamics_weights=None,
@@ -203,7 +203,7 @@ class LinearGaussianSSM(SSM):
     def sample(
         self,
         params: ParamsLGSSM,
-        key: PRNGKey,
+        key: PRNGKeyT,
         num_timesteps: int,
         inputs: Optional[Float[Array, "ntime input_dim"]] = None,
     ) -> Tuple[Float[Array, "num_timesteps state_dim"], Float[Array, "num_timesteps emission_dim"]]:
@@ -236,7 +236,7 @@ class LinearGaussianSSM(SSM):
 
     def posterior_sample(
         self,
-        key: PRNGKey,
+        key: PRNGKeyT,
         params: ParamsLGSSM,
         emissions: Float[Array, "ntime emission_dim"],
         inputs: Optional[Float[Array, "ntime input_dim"]]=None
@@ -501,7 +501,7 @@ class LinearGaussianConjugateSSM(LinearGaussianSSM):
 
     def fit_blocked_gibbs(
         self,
-        key: PRNGKey,
+        key: PRNGKeyT,
         initial_params: ParamsLGSSM,
         sample_size: int,
         emissions: Float[Array, "nbatch ntime emission_dim"],
