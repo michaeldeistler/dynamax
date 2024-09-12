@@ -17,10 +17,11 @@ from jax.tree_util import tree_map
 from jaxtyping import Float, Array, PyTree
 import optax
 from tensorflow_probability.substrates.jax import distributions as tfd
-from typing import Any, Optional, Tuple
+from typing import Any, Optional, Tuple, runtime_checkable
 from typing_extensions import Protocol
 
 
+@runtime_checkable
 class HMMParameterSet(Protocol):
     """Container for HMM parameters.
 
@@ -33,6 +34,7 @@ class HMMParameterSet(Protocol):
     emissions: ParameterSet
 
 
+@runtime_checkable
 class HMMPropertySet(Protocol):
     """Container for properties of HMM parameter properties.
 
