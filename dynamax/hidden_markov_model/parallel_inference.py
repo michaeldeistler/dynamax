@@ -12,7 +12,7 @@ from dynamax.types import Scalar
 #---------------------------------------------------------------------------#
 
 class FilterMessage(NamedTuple):
-    """Filtering associative scan elements.
+    r"""Filtering associative scan elements.
 
     Attributes:
         A: $p(z_j \mid z_i)$
@@ -132,7 +132,7 @@ def hmm_smoother(initial_probs: Float[Array, " num_states"],
 #---------------------------------------------------------------------------#
 #                                  Sampling                                 #
 #---------------------------------------------------------------------------#
-"""Associative scan elements $E_ij$ are vectors specifying a sample::
+r"""Associative scan elements $E_ij$ are vectors specifying a sample::
 
     $z_j ~ p(z_j \mid z_i)$ 
     
