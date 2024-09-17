@@ -29,9 +29,17 @@ class HMMParameterSet(Protocol):
     :param transitions: (ParameterSet) transition distribution parameters
     :param emissions: (ParameterSet) emission distribution parameters
     """
-    initial: ParameterSet
-    transitions: ParameterSet
-    emissions: ParameterSet
+    @property
+    def initial(self) -> ParameterSet:
+        pass
+
+    @property
+    def transitions(self) -> ParameterSet:
+        pass
+
+    @property
+    def emissions(self) -> ParameterSet:
+        pass
 
 
 @runtime_checkable
@@ -42,10 +50,17 @@ class HMMPropertySet(Protocol):
     :param transitions: (PropertySet) transition distribution properties
     :param emissions: (PropertySet) emission distribution properties
     """
-    initial: PropertySet
-    transitions: PropertySet
-    emissions: PropertySet
+    @property
+    def initial(self) -> PropertySet:
+        pass
 
+    @property
+    def transitions(self) -> PropertySet:
+        pass
+
+    @property
+    def emissions(self) -> PropertySet:
+        pass
 
 
 class HMMInitialState(ABC):
