@@ -55,7 +55,7 @@ def pytree_len(pytree):
         return len(tree_leaves(pytree)[0])
 
 
-def pytree_sum(pytree, axis=None, keepdims=None, where=None):
+def pytree_sum(pytree, axis=None, keepdims=False, where=None):
     return tree_map(partial(jnp.sum, axis=axis, keepdims=keepdims, where=where), pytree)
 
 
