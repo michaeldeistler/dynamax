@@ -166,7 +166,7 @@ def compute_state_overlap(
     assert z1.shape == z2.shape
     assert z1.min() >= 0 and z2.min() >= 0
 
-    K = max(z1.max(), z2.max()) + 1
+    K = max(max(z1), max(z2)) + 1
 
     overlap = jnp.sum(
         (z1[:, None] == jnp.arange(K))[:, :, None]
