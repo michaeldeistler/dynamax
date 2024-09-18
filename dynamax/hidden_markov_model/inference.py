@@ -53,7 +53,7 @@ class HMMPosterior(NamedTuple):
                                 Float[Array, "num_states num_states"]]] = None
 
 
-def _normalize(u, axis=0, eps=1e-15):
+def _normalize(u: Array, axis=0, eps=1e-15):
     """Normalizes the values within the axis in a way that they sum up to 1.
 
     Args:
@@ -146,8 +146,8 @@ def hmm_backward_filter(
     transition_matrix: Union[Float[Array, "num_timesteps num_states num_states"],
                              Float[Array, "num_states num_states"]],
     log_likelihoods: Float[Array, "num_timesteps num_states"],
-    transition_fn: Optional[Callable[[Int], Float[Array, "num_states num_states"]]]= None
-) -> Tuple[Float, Float[Array, "num_timesteps num_states"]]:
+    transition_fn: Optional[Callable[[int], Float[Array, "num_states num_states"]]]= None
+) -> Tuple[Scalar, Float[Array, "num_timesteps num_states"]]:
     r"""Run the filter backwards in time. This is the second step of the forward-backward algorithm.
 
     Transition matrix may be either 2D (if transition probabilities are fixed) or 3D
@@ -490,7 +490,7 @@ def hmm_posterior_sample(
                              Float[Array, "num_states num_states"]],
     log_likelihoods: Float[Array, "num_timesteps num_states"],
     transition_fn: Optional[Callable[[Int], Float[Array, "num_states num_states"]]] = None
-) -> Int[Array, " num_timesteps"]:
+) -> Tuple[Scalar, Int[Array, " num_timesteps"]]:
     r"""Sample a latent sequence from the posterior.
 
     Args:
@@ -547,7 +547,7 @@ def _compute_sum_transition_probs(
         hmm_posterior (_type_): _description_
     """
 
-    def _step(carry, args):
+    def _step(carry, args: Tuple[Array, Array, Array, Int[Array, ""]]):
         filtered_probs, smoothed_probs_next, predicted_probs_next, t = args
 
         # Get parameters for time t
