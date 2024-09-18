@@ -4,8 +4,9 @@ import tensorflow_probability.substrates.jax.distributions as tfd
 import tensorflow_probability.substrates.jax.bijectors as tfb
 from dynamax.hidden_markov_model.models.abstractions import HMMTransitions
 from dynamax.parameters import ParameterProperties
+from dynamax.types import Scalar
 from jaxtyping import Float, Array
-from typing import NamedTuple, Union
+from typing import NamedTuple, Optional, Union
 
 
 class ParamsStandardHMMTransitions(NamedTuple):
@@ -29,7 +30,7 @@ class StandardHMMTransitions(HMMTransitions):
 
 
     """
-    def __init__(self, num_states, concentration=1.1, stickiness=0.0):
+    def __init__(self, num_states: int, concentration: Scalar=1.1, stickiness: Scalar=0.0):
         """
         Args:
             transition_matrix[j,k]: prob(hidden(t) = k | hidden(t-1)j)
@@ -42,7 +43,7 @@ class StandardHMMTransitions(HMMTransitions):
     def distribution(self, params, state, inputs=None):
         return tfd.Categorical(probs=params.transition_matrix[state])
 
-    def initialize(self, key=None, method="prior", transition_matrix=None):
+    def initialize(self, key: Optional[Array]=None, method="prior", transition_matrix=None):
         """Initialize the model parameters and their corresponding properties.
 
         Args:
@@ -54,8 +55,11 @@ class StandardHMMTransitions(HMMTransitions):
             _type_: _description_
         """
         if transition_matrix is None:
-            this_key, key = jr.split(key)
-            transition_matrix = tfd.Dirichlet(self.concentration).sample(seed=this_key)
+            if key is None:
+                raise ValueError("key must be provided if transition_matrix is not provided.")
+            else:
+                this_key, key = jr.split(key)
+                transition_matrix = tfd.Dirichlet(self.concentration).sample(seed=this_key)
 
         # Package the results into dictionaries
         params = ParamsStandardHMMTransitions(transition_matrix=transition_matrix)
