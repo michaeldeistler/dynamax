@@ -1,4 +1,4 @@
-from typing import NamedTuple, Optional, Tuple, Union
+from typing import cast, NamedTuple, Optional, Tuple, Union
 
 import jax.numpy as jnp
 import jax.random as jr
@@ -78,7 +78,8 @@ class CategoricalHMMEmissions(HMMEmissions):
         if emission_probs is None:
             if method.lower() == "prior":
                 prior = tfd.Dirichlet(self.emission_prior_concentration)
-                emission_probs = prior.sample(seed=key, sample_shape=(self.num_states, self.emission_dim))
+                emission_probs_sample = prior.sample(seed=key, sample_shape=(self.num_states, self.emission_dim))
+                emission_probs = cast(Float[Array, "num_states emission_dim num_classes"], emission_probs_sample)
             elif method.lower() == "kmeans":
                 raise NotImplementedError("kmeans initialization is not yet implemented!")
             else:

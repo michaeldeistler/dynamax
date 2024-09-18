@@ -5,7 +5,7 @@ import jax.random as jr
 from jaxtyping import Float, Array
 import tensorflow_probability.substrates.jax.distributions as tfd
 import tensorflow_probability.substrates.jax.bijectors as tfb
-from typing import NamedTuple, Optional, Union
+from typing import cast, NamedTuple, Optional, Union
 
 
 class ParamsStandardHMMInitialState(NamedTuple):
@@ -28,7 +28,7 @@ class StandardHMMInitialState(HMMInitialState):
     def distribution(self, params, inputs=None):
         return tfd.Categorical(probs=params.probs)
 
-    def initialize(self, key: Optional[Array]=None, method="prior", initial_probs=None):
+    def initialize(self, key: Optional[Array]=None, method="prior", initial_probs: Optional[Float[Array, " num_states"]]=None):
         """Initialize the model parameters and their corresponding properties.
 
         Args:
@@ -45,7 +45,8 @@ class StandardHMMInitialState(HMMInitialState):
                 raise ValueError("key must be provided if initial_probs is not provided.")
             else:
                 this_key, key = jr.split(key)
-                initial_probs = tfd.Dirichlet(self.initial_probs_concentration).sample(seed=this_key)
+                initial_prob_sample = tfd.Dirichlet(self.initial_probs_concentration).sample(seed=this_key)
+                initial_probs = cast(Float[Array, " num_states"], initial_prob_sample)
 
         # Package the results into dictionaries
         params = ParamsStandardHMMInitialState(probs=initial_probs)

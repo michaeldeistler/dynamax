@@ -6,7 +6,7 @@ from dynamax.hidden_markov_model.models.abstractions import HMMTransitions
 from dynamax.parameters import ParameterProperties
 from dynamax.types import Scalar
 from jaxtyping import Float, Array
-from typing import NamedTuple, Optional, Union
+from typing import cast, NamedTuple, Optional, Union
 
 
 class ParamsStandardHMMTransitions(NamedTuple):
@@ -43,7 +43,7 @@ class StandardHMMTransitions(HMMTransitions):
     def distribution(self, params, state, inputs=None):
         return tfd.Categorical(probs=params.transition_matrix[state])
 
-    def initialize(self, key: Optional[Array]=None, method="prior", transition_matrix=None):
+    def initialize(self, key: Optional[Array] =None, method="prior", transition_matrix: Optional[Float[Array, "num_states num_states"]]=None):
         """Initialize the model parameters and their corresponding properties.
 
         Args:
@@ -59,7 +59,8 @@ class StandardHMMTransitions(HMMTransitions):
                 raise ValueError("key must be provided if transition_matrix is not provided.")
             else:
                 this_key, key = jr.split(key)
-                transition_matrix = tfd.Dirichlet(self.concentration).sample(seed=this_key)
+                transition_matrix_sample = tfd.Dirichlet(self.concentration).sample(seed=this_key)
+                transition_matrix = cast(Float[Array, "num_states num_states"], transition_matrix_sample)
 
         # Package the results into dictionaries
         params = ParamsStandardHMMTransitions(transition_matrix=transition_matrix)
