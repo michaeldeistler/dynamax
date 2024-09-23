@@ -1,6 +1,8 @@
 from abc import abstractmethod, ABC
+from typing import Any, Optional, Tuple, runtime_checkable, Union
+from typing_extensions import Protocol
 from dynamax.ssm import SSM
-from dynamax.types import Scalar
+from dynamax.types import IntScalar, Scalar
 from dynamax.parameters import to_unconstrained, from_unconstrained
 from dynamax.parameters import ParameterSet, PropertySet
 from dynamax.hidden_markov_model.inference import HMMPosterior
@@ -14,11 +16,9 @@ import jax.numpy as jnp
 import jax.random as jr
 from jax import vmap
 from jax.tree_util import tree_map
-from jaxtyping import Float, Array, PyTree
+from jaxtyping import Float, Array, PyTree, Real
 import optax
 from tensorflow_probability.substrates.jax import distributions as tfd
-from typing import Any, Optional, Tuple, runtime_checkable
-from typing_extensions import Protocol
 
 
 @runtime_checkable
@@ -75,7 +75,7 @@ class HMMInitialState(ABC):
 
     @abstractmethod
     def distribution(self,
-                     params: ParameterSet,
+                     params: HMMParameterSet,
                      inputs: Optional[Float[Array, " input_dim"]]=None
     ) -> tfd.Distribution:
         """Return a distribution over the initial latent state
@@ -114,7 +114,7 @@ class HMMInitialState(ABC):
         raise NotImplementedError
 
     def _compute_initial_probs(self, params, inputs=None):
-        return self.initial_distribution(params, inputs).probs_parameter()
+        return self.distribution(params, inputs).probs_parameter()
 
     def collect_suff_stats(self,
                            params: ParameterSet,
@@ -211,7 +211,7 @@ class HMMTransitions(ABC):
     @abstractmethod
     def distribution(self,
                      params: ParameterSet,
-                     state: int,
+                     state: IntScalar,
                      inputs: Optional[Float[Array, " input_dim"]]=None
     ) -> tfd.Distribution:
         """Return a distribution over the next latent state
@@ -367,7 +367,7 @@ class HMMEmissions(ABC):
     @abstractmethod
     def distribution(self,
                      params: ParameterSet,
-                     state: int,
+                     state: IntScalar,
                      inputs: Optional[Float[Array, " input_dim"]]=None
     ) -> tfd.Distribution:
         """Return a distribution over the emission
@@ -422,7 +422,8 @@ class HMMEmissions(ABC):
     def collect_suff_stats(self,
                            params: ParameterSet,
                            posterior: HMMPosterior,
-                           emissions: Float[Array, "num_timesteps emission_dim"],
+                           emissions: Union[Real[Array, "num_timesteps emission_dim"],
+                                            Real[Array, " num_timesteps"]],
                            inputs: Optional[Float[Array, "num_timesteps input_dim"]]=None
     ) -> PyTree:
         """Collect sufficient statistics for updating the emission distribution parameters.
